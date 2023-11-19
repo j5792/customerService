@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Customer</title>
+
+  <!-- Include your necessary header and meta tags here (similar to the Login Screen) -->
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+  
+    #addCustomerContainer {
+      text-align: center;
+    }
+  
+    h2 {
+      color: #333;
+    }
+  
+    button {
+      background-color: #4caf50;
+      color: #fff;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+      transition: background-color 0.3s ease-in-out;
+    }
+  
+    button:hover {
+      background-color: #45a049;
+    }
+  
+    #addCustomerForm {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      width: 300px;
+      max-width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+  
+    label {
+      margin-bottom: 8px;
+      color: #555;
+    }
+  
+    input {
+      padding: 10px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      transition: border-color 0.3s ease-in-out;
+    }
+  
+    input:focus {
+      border-color: #4caf50;
+    }
+  
+    .success-message {
+      color: #4caf50;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+  
+  
+</head>
+<body>
+  <div id="addCustomerContainer">
+    <h2>Add New Customer</h2>
+    <form id="addCustomerForm">
+      <label for="firstName">First Name:</label>
+      <input type="text" id="firstName" name="firstName" required>
+
+      <label for="lastName">Last Name:</label>
+      <input type="text" id="lastName" name="lastName" required>
+
+      <label for="street">Street:</label>
+      <input type="text" id="street" name="street">
+
+      <label for="address">Address:</label>
+      <input type="text" id="address" name="address">
+
+      <label for="city">City:</label>
+      <input type="text" id="city" name="city">
+
+      <label for="state">State:</label>
+      <input type="text" id="state" name="state">
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email">
+
+      <label for="phone">Phone:</label>
+      <input type="tel" id="phone" name="phone">
+
+      <button type="button" onclick="createCustomer()">Create Customer</button>
+      <p class="success-message" id="successMessage"></p>
+    </form>
+  </div>
+
+  <script>
+    function createCustomer() {
+      const firstName = document.getElementById('firstName').value;
+      const lastName = document.getElementById('lastName').value;
+      const street = document.getElementById('street').value;
+      const address = document.getElementById('address').value;
+      const city = document.getElementById('city').value;
+      const state = document.getElementById('state').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+
+      fetch('https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('bearerToken'),
+        },
+        body: JSON.stringify({
+          "first_name": firstName,
+          "last_name": lastName,
+          "street": street,
+          "address": address,
+          "city": city,
+          "state": state,
+          "email": email,
+          "phone": phone,
+        }),
+      })
+      .then(response => {
+        if (response.ok) {
+          document.getElementById('successMessage').innerText = 'Customer created successfully!';
+          clearForm();
+        } else if (response.status === 400) {
+          throw new Error('First Name or Last Name is missing');
+        } else {
+          throw new Error('Failed to create customer');
+        }
+      })
+      .catch(error => {
+        document.getElementById('successMessage').innerText = '';
+        alert('Failed to create customer. ' + error.message);
+        console.error('Create Customer Error:', error);
+      });
+    }
+
+    function clearForm() {
+      document.getElementById('addCustomerForm').reset();
+      setTimeout(() => {
+        document.getElementById('successMessage').innerText = '';
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
